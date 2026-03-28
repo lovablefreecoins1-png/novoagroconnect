@@ -2,104 +2,187 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 130 11% 97%;
+    --foreground: 120 5% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 120 5% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 120 5% 8%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 145 55% 23%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 30 63% 47%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 120 6% 91%;
+    --muted-foreground: 120 3% 42%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 30 63% 47%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 52% 46%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --success: 145 55% 23%;
+    --success-foreground: 0 0% 100%;
 
-    --radius: 0.5rem;
+    --warning: 30 63% 47%;
+    --warning-foreground: 0 0% 100%;
 
-    --sidebar-background: 0 0% 98%;
+    --border: 120 6% 89%;
+    --input: 120 6% 89%;
+    --ring: 145 55% 23%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    --radius: 0.75rem;
+    --primary-bg: 98 45% 91%;
+    --accent-bg: 35 85% 93%;
+    --text-hint: 160 4% 63%;
+    --whatsapp: 145 72% 49%;
+    --verified-foreground: 93 70% 17%;
+    --premium-foreground: 28 90% 21%;
+    --online-bg: 138 76% 97%;
+    --online-foreground: 142 64% 24%;
+    --online-dot: 142 71% 45%;
 
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-background: 130 11% 97%;
+    --sidebar-foreground: 120 5% 8%;
+    --sidebar-primary: 145 55% 23%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 120 6% 91%;
+    --sidebar-accent-foreground: 120 5% 8%;
+    --sidebar-border: 120 6% 91%;
+    --sidebar-ring: 145 55% 23%;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  #root {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 text-base font-semibold text-primary-foreground transition-all duration-200 hover:opacity-90 active:scale-[0.97] active:opacity-90 md:w-auto;
+    min-height: 52px;
+  }
+
+  .btn-secondary {
+    @apply flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-primary bg-transparent px-6 text-base font-semibold text-primary transition-all duration-200 hover:bg-primary/5 active:scale-[0.97] md:w-auto;
+    min-height: 52px;
+  }
+
+  .btn-outline {
+    @apply flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-border bg-transparent px-6 text-base font-medium text-foreground transition-all duration-200 hover:bg-muted md:w-auto;
+    min-height: 52px;
+  }
+
+  .btn-whatsapp {
+    @apply flex w-full items-center justify-center gap-2 rounded-2xl px-6 text-base font-semibold text-primary-foreground transition-all duration-200 hover:opacity-90 active:scale-[0.97] active:opacity-90 md:w-auto;
+    min-height: 52px;
+    background-color: hsl(var(--whatsapp));
+  }
+
+  .btn-ghost {
+    @apply flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground active:scale-[0.97];
+  }
+
+  .input-field {
+    @apply w-full rounded-xl border-[1.5px] border-border bg-card px-4 text-base text-foreground placeholder:text-muted-foreground transition-all duration-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10;
+    min-height: 52px;
+  }
+
+  .card-agro {
+    @apply rounded-2xl border border-border bg-card p-4 shadow-sm transition-all duration-200 hover:shadow-md;
+  }
+
+  .badge-verified {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium;
+    background-color: hsl(var(--primary-bg));
+    color: hsl(var(--verified-foreground));
+  }
+
+  .badge-online {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium;
+    background-color: hsl(var(--online-bg));
+    color: hsl(var(--online-foreground));
+  }
+
+  .badge-premium {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium;
+    background-color: hsl(var(--accent-bg));
+    color: hsl(var(--premium-foreground));
+  }
+
+  .badge-online .dot {
+    @apply h-2 w-2 animate-pulse rounded-full;
+    background-color: hsl(var(--online-dot));
+  }
+
+  /* Page containers */
+  .page-container {
+    @apply min-h-screen pb-20 md:pb-6 bg-background;
+  }
+
+  .page-header {
+    @apply sticky top-0 z-20 bg-card/95 backdrop-blur-md border-b border-border;
+  }
+
+  .page-content {
+    @apply max-w-2xl mx-auto px-4 py-5;
+  }
+
+  /* Section spacing */
+  .section-title {
+    @apply text-lg font-semibold text-foreground;
+  }
+
+  .section-subtitle {
+    @apply text-sm text-muted-foreground;
+  }
+
+  /* Loading skeleton */
+  .skeleton {
+    @apply animate-pulse rounded-xl bg-muted;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
