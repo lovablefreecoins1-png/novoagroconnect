@@ -98,12 +98,12 @@ export default function Inicio() {
               <span className={`w-2 h-2 rounded-full ${dispDot}`} />{dispLabel}
             </span>
           )}
-          <button onClick={() => { navigate("/pedidos"); setNewNotif(false); }} className="p-2 rounded-xl hover:bg-muted relative">
-            <Bell size={20} className="text-muted-foreground mx-[20px] w-[70px]" />
-            {newNotif && <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-destructive" />}
+          <button onClick={() => { navigate("/pedidos"); setNewNotif(false); }} className="p-2 rounded-xl hover:bg-muted relative" aria-label="Pedidos">
+            <Bell size={20} className="text-muted-foreground" />
+            {newNotif && <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-destructive animate-pulse" />}
           </button>
-          <Link to="/perfil" className="p-2 rounded-xl hover:bg-muted mx-0 px-[20px] py-[10px]">
-            <User size={20} className="text-muted-foreground mx-[20px] w-[70px]" />
+          <Link to="/perfil" className="p-2 rounded-xl hover:bg-muted" aria-label="Perfil">
+            <User size={20} className="text-muted-foreground" />
           </Link>
         </div>
       </header>
