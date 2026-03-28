@@ -39,24 +39,23 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border md:hidden"
-      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+      className="fixed bottom-0 left-0 right-0 z-40 bg-card/95 backdrop-blur-lg border-t border-border md:hidden safe-bottom"
     >
-      <div className="flex items-center justify-around h-16">
+      <div className="flex items-center justify-around h-[60px]">
         {tabs.map((tab) => {
           const active = pathname === tab.path || (tab.path !== "/inicio" && pathname.startsWith(tab.path));
           return (
             <Link
               key={tab.path}
               to={tab.path}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 relative rounded-xl transition-colors min-w-[56px] ${
-                active ? "text-primary" : "text-muted-foreground"
+              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 relative rounded-xl transition-all duration-200 min-w-[56px] active:scale-[0.92] ${
+                active ? "text-primary" : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <tab.icon size={22} strokeWidth={active ? 2.5 : 2} />
-              <span className={`text-[11px] ${active ? "font-semibold" : "font-medium"}`}>{tab.label}</span>
+              <tab.icon size={22} strokeWidth={active ? 2.5 : 1.8} className="transition-all duration-200" />
+              <span className={`text-[10px] leading-tight ${active ? "font-semibold" : "font-medium"}`}>{tab.label}</span>
               {active && (
-                <span className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-5 h-0.5 rounded-full bg-primary" />
+                <span className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-6 h-[3px] rounded-full bg-primary transition-all duration-200" />
               )}
             </Link>
           );
