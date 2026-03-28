@@ -59,7 +59,7 @@ export default function Marketplace() {
             <button onClick={() => window.history.back()} className="text-muted-foreground hover:text-foreground" aria-label="Voltar"><ArrowLeft size={24} /></button>
             <h1 className="text-lg font-medium">Marketplace</h1>
           </div>
-          <Link to="/marketplace/novo" className="btn-primary !min-h-[40px] font-extralight text-base border-solid px-[8px] mx-[70px]">
+          <Link to="/marketplace/novo" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors active:scale-[0.97]">
             <Plus size={18} /> Anunciar
           </Link>
         </div>
