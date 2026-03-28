@@ -163,7 +163,7 @@ export default function LandingPage() {
               <input
                 type="text"
                 placeholder="O que você precisa? Ex: veterinário, trator..."
-                className="w-full h-14 md:h-16 pl-13 pr-4 rounded-2xl bg-white shadow-2xl shadow-black/20 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 pl-12"
+                className="w-full h-14 md:h-16 pl-12 pr-4 rounded-2xl bg-white shadow-2xl shadow-black/20 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setShowSuggestions(true); }}
                 onFocus={() => setShowSuggestions(true)}
