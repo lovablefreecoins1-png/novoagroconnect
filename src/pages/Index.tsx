@@ -7,7 +7,7 @@ import { artigosMock } from "@/data/blogData";
 import BlogCard from "@/components/BlogCard";
 import { useAuth } from "@/lib/auth";
 import ServicosDestaque from "@/components/ServicosDestaque";
-import heroBg from "@/assets/hero-coffee.jpg";
+import heroBg from "@/assets/hero-rural.jpg";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
