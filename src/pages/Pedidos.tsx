@@ -301,16 +301,11 @@ export default function Pedidos() {
   ];
 
   return (
-    <div className="min-h-screen pb-20 bg-background">
+    <div className="min-h-screen pb-24 bg-background">
       <header className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b border-border px-4 py-3">
         <div className="max-w-2xl mx-auto flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="text-muted-foreground hover:text-foreground p-1"><ArrowLeft size={24} /></button>
           <h1 className="text-lg font-medium flex-1">Pedidos & Serviços</h1>
-          {activeTab === "pedidos" && (
-            <button onClick={() => setShowNewLead(true)} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors active:scale-[0.98]">
-              <Plus size={16} /> Novo Pedido
-            </button>
-          )}
         </div>
       </header>
 

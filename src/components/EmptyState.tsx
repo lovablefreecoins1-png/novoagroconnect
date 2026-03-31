@@ -11,7 +11,7 @@ interface EmptyStateProps {
 
 const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(({ icon: Icon, title, description, actionLabel, onAction }, ref) => {
   return (
-    <div className="flex flex-col items-center justify-center py-16 px-4 text-center animate-fade-in">
+    <div ref={ref} className="flex flex-col items-center justify-center py-16 px-4 text-center animate-fade-in">
       <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
         <Icon size={28} className="text-muted-foreground/50" />
       </div>
@@ -24,4 +24,8 @@ const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(({ icon: Ic
       )}
     </div>
   );
-}
+});
+
+EmptyState.displayName = "EmptyState";
+
+export default EmptyState;
