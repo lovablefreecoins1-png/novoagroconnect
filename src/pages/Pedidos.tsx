@@ -554,6 +554,16 @@ export default function Pedidos() {
         )}
       </div>
 
+      {/* Floating Action Button for Novo Pedido */}
+      {activeTab === "pedidos" && (
+        <button
+          onClick={() => setShowNewLead(true)}
+          className="fixed bottom-24 right-5 z-30 flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all active:scale-[0.96] md:bottom-8"
+        >
+          <Plus size={20} /> Novo Pedido
+        </button>
+      )}
+
       {/* New Lead Modal */}
       {showNewLead && (
         <ModalForm title="Novo Pedido de Serviço" onClose={() => setShowNewLead(false)}>

@@ -1,3 +1,4 @@
+import React from "react";
 import { Home, Search, ClipboardList, Store, Landmark } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -11,7 +12,7 @@ const tabs = [
   { icon: Landmark, label: "Fazenda", path: "/fazenda" },
 ];
 
-export default function BottomNav() {
+const BottomNav = React.forwardRef<HTMLElement, {}>((_props, ref) => {
   const { pathname } = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
