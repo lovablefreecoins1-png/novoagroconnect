@@ -14,7 +14,236 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      anuncios: {
+        Row: {
+          category: string | null
+          city: string | null
+          created_at: string
+          description: string | null
+          id: string
+          photos: string[] | null
+          price: number | null
+          price_type: string | null
+          state: string | null
+          status: string | null
+          title: string
+          user_id: string
+          whatsapp: string | null
+        }
+        Insert: {
+          category?: string | null
+          city?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          photos?: string[] | null
+          price?: number | null
+          price_type?: string | null
+          state?: string | null
+          status?: string | null
+          title: string
+          user_id: string
+          whatsapp?: string | null
+        }
+        Update: {
+          category?: string | null
+          city?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          photos?: string[] | null
+          price?: number | null
+          price_type?: string | null
+          state?: string | null
+          status?: string | null
+          title?: string
+          user_id?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      contracts: {
+        Row: {
+          completed_at: string | null
+          cost_amount: number | null
+          created_at: string
+          gross_amount: number | null
+          id: string
+          lead_id: string | null
+          producer_id: string | null
+          provider_id: string | null
+          scheduled_date: string | null
+          service_name: string | null
+          status: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          cost_amount?: number | null
+          created_at?: string
+          gross_amount?: number | null
+          id?: string
+          lead_id?: string | null
+          producer_id?: string | null
+          provider_id?: string | null
+          scheduled_date?: string | null
+          service_name?: string | null
+          status?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          cost_amount?: number | null
+          created_at?: string
+          gross_amount?: number | null
+          id?: string
+          lead_id?: string | null
+          producer_id?: string | null
+          provider_id?: string | null
+          scheduled_date?: string | null
+          service_name?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contracts_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          budget: number | null
+          created_at: string
+          id: string
+          location_text: string | null
+          message: string | null
+          producer_id: string | null
+          producer_name: string | null
+          provider_id: string | null
+          provider_name: string | null
+          requested_date: string | null
+          service: string | null
+          status: string | null
+        }
+        Insert: {
+          budget?: number | null
+          created_at?: string
+          id?: string
+          location_text?: string | null
+          message?: string | null
+          producer_id?: string | null
+          producer_name?: string | null
+          provider_id?: string | null
+          provider_name?: string | null
+          requested_date?: string | null
+          service?: string | null
+          status?: string | null
+        }
+        Update: {
+          budget?: number | null
+          created_at?: string
+          id?: string
+          location_text?: string | null
+          message?: string | null
+          producer_id?: string | null
+          producer_name?: string | null
+          provider_id?: string | null
+          provider_name?: string | null
+          requested_date?: string | null
+          service?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          city: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          lat: number | null
+          lng: number | null
+          phone: string | null
+          production_types: string[] | null
+          property_size: string | null
+          state: string | null
+          updated_at: string
+          user_type: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          lat?: number | null
+          lng?: number | null
+          phone?: string | null
+          production_types?: string[] | null
+          property_size?: string | null
+          state?: string | null
+          updated_at?: string
+          user_type?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          phone?: string | null
+          production_types?: string[] | null
+          property_size?: string | null
+          state?: string | null
+          updated_at?: string
+          user_type?: string
+        }
+        Relationships: []
+      }
+      providers: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          disponibilidade: string | null
+          id: string
+          rating: number | null
+          review_count: number | null
+          user_id: string
+          verified: boolean | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          disponibilidade?: string | null
+          id?: string
+          rating?: number | null
+          review_count?: number | null
+          user_id: string
+          verified?: boolean | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          disponibilidade?: string | null
+          id?: string
+          rating?: number | null
+          review_count?: number | null
+          user_id?: string
+          verified?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

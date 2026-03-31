@@ -58,9 +58,17 @@ export default function PWAInstallBanner() {
       setShowBanner(true);
     };
 
+    // Sync dismiss across tabs via storage event
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === DISMISS_KEY && e.newValue === "true") {
+        setShowBanner(false);
+      }
+    };
+
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     window.addEventListener("appinstalled", handleInstalled);
     window.addEventListener("agroconnect:open-install", handleOpenInstall);
+    window.addEventListener("storage", handleStorageChange);
 
     if (ios) {
       setShowBanner(true);
@@ -70,6 +78,7 @@ export default function PWAInstallBanner() {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
       window.removeEventListener("appinstalled", handleInstalled);
       window.removeEventListener("agroconnect:open-install", handleOpenInstall);
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, [toast]);
 
