@@ -7,13 +7,14 @@ import { useToast } from "@/hooks/use-toast";
 
 interface Anuncio {
   id: string;
-  titulo: string;
-  descricao: string | null;
-  preco: string | null;
-  categoria: string | null;
-  cidade: string | null;
-  estado: string | null;
-  fotos: string[] | null;
+  title: string;
+  description: string | null;
+  price: number | null;
+  price_type: string | null;
+  category: string | null;
+  city: string | null;
+  state: string | null;
+  photos: string[] | null;
   whatsapp: string | null;
   created_at: string;
   user_id: string;
@@ -70,14 +71,19 @@ export default function MarketplaceDetalhe() {
 
   const isOwner = user?.id === anuncio.user_id;
   const phone = anuncio.whatsapp?.replace(/\D/g, "") || "";
-  const whatsappUrl = `https://wa.me/55${phone}?text=${encodeURIComponent(`Olá, vi seu anúncio "${anuncio.titulo}" no AgroConnect e tenho interesse.`)}`;
+  const whatsappUrl = `https://wa.me/55${phone}?text=${encodeURIComponent(`Olá, vi seu anúncio "${anuncio.title}" no AgroConnect e tenho interesse.`)}`;
+
+  const formatPrice = () => {
+    if (anuncio.price_type === "negotiable" || !anuncio.price) return "A combinar";
+    return `R$ ${anuncio.price.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+  };
 
   return (
     <div className="min-h-screen pb-24">
       <header className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border px-4 py-3">
         <div className="max-w-2xl mx-auto flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="text-muted-foreground hover:text-foreground"><ArrowLeft size={24} /></button>
-          <h1 className="text-lg font-medium truncate flex-1">{anuncio.titulo}</h1>
+          <h1 className="text-lg font-medium truncate flex-1">{anuncio.title}</h1>
           {isOwner && (
             <button onClick={() => setShowDeleteModal(true)} className="p-2 text-destructive hover:bg-destructive/10 rounded-xl">
               <Trash2 size={20} />
@@ -87,8 +93,8 @@ export default function MarketplaceDetalhe() {
       </header>
 
       <div className="max-w-2xl mx-auto">
-        {anuncio.fotos && anuncio.fotos.length > 0 ? (
-          <img src={anuncio.fotos[0]} alt={anuncio.titulo} className="w-full aspect-[4/3] object-cover" />
+        {anuncio.photos && anuncio.photos.length > 0 ? (
+          <img src={anuncio.photos[0]} alt={anuncio.title} className="w-full aspect-[4/3] object-cover" />
         ) : (
           <div className="w-full aspect-[4/3] bg-muted flex items-center justify-center">
             <Store size={48} className="text-muted-foreground/30" />
@@ -97,12 +103,12 @@ export default function MarketplaceDetalhe() {
 
         <div className="px-4 py-4 space-y-4">
           <div>
-            {anuncio.categoria && <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">{anuncio.categoria}</span>}
-            <h2 className="text-xl font-medium mt-2">{anuncio.titulo}</h2>
-            <p className="text-2xl font-medium text-primary mt-1">{anuncio.preco || "A combinar"}</p>
+            {anuncio.category && <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">{anuncio.category}</span>}
+            <h2 className="text-xl font-medium mt-2">{anuncio.title}</h2>
+            <p className="text-2xl font-medium text-primary mt-1">{formatPrice()}</p>
           </div>
 
-          {anuncio.descricao && <p className="text-sm text-muted-foreground">{anuncio.descricao}</p>}
+          {anuncio.description && <p className="text-sm text-muted-foreground">{anuncio.description}</p>}
 
           {profile && (
             <div className="card-agro flex items-center gap-3">
@@ -111,14 +117,13 @@ export default function MarketplaceDetalhe() {
               </div>
               <div>
                 <p className="text-sm font-medium">{profile.full_name || "Anunciante"}</p>
-                <p className="text-xs text-muted-foreground">{anuncio.cidade || "Sul de Minas"}, {anuncio.estado || "MG"}</p>
+                <p className="text-xs text-muted-foreground">{anuncio.city || "Sul de Minas"}, {anuncio.state || "MG"}</p>
               </div>
             </div>
           )}
         </div>
       </div>
 
-      {/* Single WhatsApp CTA - fixed bottom */}
       <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border p-4 z-20" style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 16px)" }}>
         <div className="max-w-2xl mx-auto">
           {phone ? (
@@ -134,7 +139,6 @@ export default function MarketplaceDetalhe() {
         </div>
       </div>
 
-      {/* Delete modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
           <div className="card-agro max-w-sm w-full p-6 space-y-4">
