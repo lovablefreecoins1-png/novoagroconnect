@@ -6,13 +6,14 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface Anuncio {
   id: string;
-  titulo: string;
-  descricao: string | null;
-  preco: string | null;
-  categoria: string | null;
-  cidade: string | null;
-  estado: string | null;
-  fotos: string[] | null;
+  title: string;
+  description: string | null;
+  price: number | null;
+  price_type: string | null;
+  category: string | null;
+  city: string | null;
+  state: string | null;
+  photos: string[] | null;
   whatsapp: string | null;
   created_at: string;
   user_id: string;
@@ -31,11 +32,10 @@ export default function Marketplace() {
 
   const loadAnuncios = async () => {
     setLoading(true);
-    let query = supabase.from("anuncios").select("*").eq("ativo", true).order("created_at", { ascending: false });
-    if (catFilter) query = query.eq("categoria", catFilter);
+    let query = supabase.from("anuncios").select("*").eq("status", "active").order("created_at", { ascending: false });
+    if (catFilter) query = query.eq("category", catFilter);
     const { data } = await query;
     const ads = (data as Anuncio[]) || [];
-    // Fetch profiles for avatar
     if (ads.length > 0) {
       const userIds = [...new Set(ads.map(a => a.user_id))];
       const { data: profiles } = await supabase.from("profiles").select("id, full_name, avatar_url").in("id", userIds);
@@ -47,9 +47,14 @@ export default function Marketplace() {
   };
 
   const filtered = anuncios.filter(a =>
-    !search || a.titulo.toLowerCase().includes(search.toLowerCase()) ||
-    a.descricao?.toLowerCase().includes(search.toLowerCase())
+    !search || a.title.toLowerCase().includes(search.toLowerCase()) ||
+    a.description?.toLowerCase().includes(search.toLowerCase())
   );
+
+  const formatPrice = (a: Anuncio) => {
+    if (a.price_type === "negotiable" || !a.price) return "A combinar";
+    return `R$ ${a.price.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+  };
 
   return (
     <div className="min-h-screen pb-20">
@@ -65,7 +70,6 @@ export default function Marketplace() {
         </div>
       </header>
 
-      {/* Search */}
       <div className="max-w-4xl mx-auto px-4 mt-4">
         <div className="relative">
           <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -78,7 +82,6 @@ export default function Marketplace() {
         </div>
       </div>
 
-      {/* Category chips */}
       <div className="max-w-4xl mx-auto px-4 mt-3 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
         <button
           onClick={() => setCatFilter(null)}
@@ -97,7 +100,6 @@ export default function Marketplace() {
         ))}
       </div>
 
-      {/* Results */}
       <div className="max-w-4xl mx-auto px-4 mt-4">
         {loading ? (
           <div className="text-center py-16">
@@ -116,8 +118,8 @@ export default function Marketplace() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map(a => (
               <Link key={a.id} to={`/marketplace/${a.id}`} className="card-agro !p-0 overflow-hidden group">
-                {a.fotos && a.fotos.length > 0 ? (
-                  <img src={a.fotos[0]} alt={a.titulo} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
+                {a.photos && a.photos.length > 0 ? (
+                  <img src={a.photos[0]} alt={a.title} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
                 ) : (
                   <div className="w-full h-48 bg-muted flex items-center justify-center">
                     <Store size={32} className="text-muted-foreground/40" />
@@ -130,16 +132,16 @@ export default function Marketplace() {
                     </div>
                     <span className="text-xs text-muted-foreground truncate">{a.profile?.full_name || "Anunciante"}</span>
                   </div>
-                  {a.categoria && (
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">{a.categoria}</span>
+                  {a.category && (
+                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">{a.category}</span>
                   )}
-                  <h3 className="font-medium text-[15px] mt-2 line-clamp-1">{a.titulo}</h3>
+                  <h3 className="font-medium text-[15px] mt-2 line-clamp-1">{a.title}</h3>
                   <p className="text-lg font-semibold text-primary mt-1">
-                    {a.preco ? `R$ ${a.preco}` : "A combinar"}
+                    {formatPrice(a)}
                   </p>
-                  {a.cidade && (
+                  {a.city && (
                     <p className="text-xs text-muted-foreground mt-1.5 flex items-center gap-1">
-                      <MapPin size={12} /> {a.cidade}{a.estado ? `, ${a.estado}` : ""}
+                      <MapPin size={12} /> {a.city}{a.state ? `, ${a.state}` : ""}
                     </p>
                   )}
                 </div>

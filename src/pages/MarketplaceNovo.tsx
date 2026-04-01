@@ -43,20 +43,27 @@ export default function MarketplaceNovo() {
     if (!user) { toast({ title: "Faça login para anunciar.", variant: "destructive" }); return; }
 
     setSubmitting(true);
+
+    // Parse price as number
+    const priceNum = aCombinar ? null : (parseFloat(preco.replace(/[^\d.,]/g, "").replace(",", ".")) || null);
+
     const { error } = await supabase.from("anuncios").insert({
-      titulo: titulo.trim(),
-      descricao: descricao.trim(),
-      categoria,
-      preco: aCombinar ? "A combinar" : preco || null,
-      fotos: fotos.length > 0 ? fotos : null,
+      title: titulo.trim(),
+      description: descricao.trim(),
+      category: categoria,
+      price: priceNum,
+      price_type: aCombinar ? "negotiable" : "fixed",
+      photos: fotos.length > 0 ? fotos : null,
       whatsapp: whatsapp || user.phone || null,
-      cidade: user.city || "Boa Esperança",
-      estado: user.state || "MG",
+      city: user.city || "Boa Esperança",
+      state: user.state || "MG",
       user_id: user.id,
+      status: "active",
     });
     setSubmitting(false);
 
     if (error) {
+      console.error("Insert error:", error);
       toast({ title: "Erro ao publicar anúncio. Tente novamente.", variant: "destructive" });
       return;
     }

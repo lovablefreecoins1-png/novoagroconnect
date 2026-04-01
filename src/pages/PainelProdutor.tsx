@@ -877,7 +877,7 @@ function MarketplaceExplorar() {
   const [loadingState, setLoadingState] = useState(true);
 
   useEffect(() => {
-    supabase.from("anuncios").select("*").eq("ativo", true).order("created_at", { ascending: false }).limit(20)
+    supabase.from("anuncios").select("*").eq("status", "active").order("created_at", { ascending: false }).limit(20)
       .then(({ data }) => { setAnuncios(data || []); setLoadingState(false); });
   }, []);
 
@@ -888,17 +888,17 @@ function MarketplaceExplorar() {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       {anuncios.map(a => (
         <Link key={a.id} to={`/marketplace/${a.id}`} className="card-agro !p-0 overflow-hidden hover:border-primary/30 transition-colors">
-          {a.fotos && a.fotos.length > 0 ? (
-            <img src={a.fotos[0]} alt={a.titulo} className="w-full h-36 object-cover" />
+          {a.photos && a.photos.length > 0 ? (
+            <img src={a.photos[0]} alt={a.title} className="w-full h-36 object-cover" />
           ) : (
             <div className="w-full h-36 bg-muted flex items-center justify-center"><Store size={24} className="text-muted-foreground/40" /></div>
           )}
           <div className="p-3">
-            <h3 className="font-medium text-[15px]">{a.titulo}</h3>
-            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{a.descricao}</p>
+            <h3 className="font-medium text-[15px]">{a.title}</h3>
+            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{a.description}</p>
             <div className="flex items-center justify-between mt-3">
-              {a.preco && <span className="text-sm font-medium text-primary">{a.preco}</span>}
-              <span className="text-xs text-muted-foreground">{a.cidade}, {a.estado}</span>
+              {a.price && <span className="text-sm font-medium text-primary">R$ {a.price}</span>}
+              <span className="text-xs text-muted-foreground">{a.city}, {a.state}</span>
             </div>
           </div>
         </Link>

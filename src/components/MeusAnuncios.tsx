@@ -6,13 +6,14 @@ import { useToast } from "@/hooks/use-toast";
 
 interface Anuncio {
   id: string;
-  titulo: string;
-  preco: string | null;
-  categoria: string | null;
-  cidade: string | null;
-  estado: string | null;
-  fotos: string[] | null;
-  ativo: boolean | null;
+  title: string;
+  price: number | null;
+  price_type: string | null;
+  category: string | null;
+  city: string | null;
+  state: string | null;
+  photos: string[] | null;
+  status: string | null;
   created_at: string;
 }
 
@@ -29,7 +30,7 @@ export default function MeusAnuncios({ userId }: { userId: string }) {
   const loadAnuncios = async () => {
     const { data } = await supabase
       .from("anuncios")
-      .select("id, titulo, preco, categoria, cidade, estado, fotos, ativo, created_at")
+      .select("id, title, price, price_type, category, city, state, photos, status, created_at")
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
     setAnuncios((data as Anuncio[]) || []);
@@ -46,6 +47,11 @@ export default function MeusAnuncios({ userId }: { userId: string }) {
       toast({ title: "Anúncio excluído." });
     }
     setDeletingId(null);
+  };
+
+  const formatPrice = (a: Anuncio) => {
+    if (a.price_type === "negotiable" || !a.price) return "A combinar";
+    return `R$ ${a.price.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
   };
 
   if (loading) return <p className="text-muted-foreground py-8 text-center">Carregando...</p>;
@@ -72,19 +78,19 @@ export default function MeusAnuncios({ userId }: { userId: string }) {
         <div className="space-y-3">
           {anuncios.map(a => (
             <div key={a.id} className="card-agro flex items-start gap-3">
-              {a.fotos && a.fotos[0] ? (
-                <img src={a.fotos[0]} alt="" className="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
+              {a.photos && a.photos[0] ? (
+                <img src={a.photos[0]} alt="" className="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
               ) : (
                 <div className="w-16 h-16 rounded-xl bg-muted flex items-center justify-center flex-shrink-0">
                   <Store size={20} className="text-muted-foreground/40" />
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <Link to={`/marketplace/${a.id}`} className="font-medium text-[15px] hover:underline line-clamp-1">{a.titulo}</Link>
-                <p className="text-sm text-primary font-medium">{a.preco || "A combinar"}</p>
-                {a.cidade && (
+                <Link to={`/marketplace/${a.id}`} className="font-medium text-[15px] hover:underline line-clamp-1">{a.title}</Link>
+                <p className="text-sm text-primary font-medium">{formatPrice(a)}</p>
+                {a.city && (
                   <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
-                    <MapPin size={10} /> {a.cidade}
+                    <MapPin size={10} /> {a.city}
                   </p>
                 )}
               </div>
