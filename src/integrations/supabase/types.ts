@@ -112,6 +112,42 @@ export type Database = {
           },
         ]
       }
+      inventory: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          min_stock: number | null
+          name: string
+          notes: string | null
+          quantity: number
+          unit: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          min_stock?: number | null
+          name: string
+          notes?: string | null
+          quantity?: number
+          unit?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          min_stock?: number | null
+          name?: string
+          notes?: string | null
+          quantity?: number
+          unit?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           budget: number | null
