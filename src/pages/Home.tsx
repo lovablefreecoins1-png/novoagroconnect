@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Search, MapPin, User, CheckCircle, MessageCircle, Eye, Loader2, Wrench, SlidersHorizontal } from "lucide-react";
+import { ArrowLeft, Search, MapPin, User, CheckCircle, MessageCircle, Eye, Loader2, Wrench, SlidersHorizontal, Plus } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 import CategoryChips from "@/components/CategoryChips";
 import { sortOptions, serviceCategories } from "@/data/categories";
@@ -294,6 +294,14 @@ export default function Home() {
           })
         )}
       </div>
+
+      {/* FAB - Anunciar Serviço */}
+      <Link
+        to={user ? "/meus-servicos" : "/cadastro/prestador"}
+        className="fixed bottom-24 right-5 z-30 flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all active:scale-[0.96] md:bottom-8"
+      >
+        <Plus size={20} /> Anunciar Serviço
+      </Link>
     </div>
   );
 }
