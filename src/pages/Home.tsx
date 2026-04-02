@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Search, MapPin, User, CheckCircle, MessageCircle, Eye, Loader2, Wrench, SlidersHorizontal } from "lucide-react";
+import { ArrowLeft, Search, MapPin, User, CheckCircle, MessageCircle, Eye, Loader2, Wrench, SlidersHorizontal, Plus } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 import CategoryChips from "@/components/CategoryChips";
 import { sortOptions, serviceCategories } from "@/data/categories";
