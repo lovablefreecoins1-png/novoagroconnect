@@ -210,33 +210,42 @@ export type Database = {
       }
       providers: {
         Row: {
+          available: string | null
+          bio: string | null
           category: string | null
           created_at: string
           description: string | null
           disponibilidade: string | null
           id: string
+          radius_km: number | null
           rating: number | null
           review_count: number | null
           user_id: string
           verified: boolean | null
         }
         Insert: {
+          available?: string | null
+          bio?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
           disponibilidade?: string | null
           id?: string
+          radius_km?: number | null
           rating?: number | null
           review_count?: number | null
           user_id: string
           verified?: boolean | null
         }
         Update: {
+          available?: string | null
+          bio?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
           disponibilidade?: string | null
           id?: string
+          radius_km?: number | null
           rating?: number | null
           review_count?: number | null
           user_id?: string
