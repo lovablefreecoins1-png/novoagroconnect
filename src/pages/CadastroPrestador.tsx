@@ -195,16 +195,16 @@ export default function CadastroPrestador() {
     <div className="min-h-screen flex flex-col bg-background">
       <header className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b border-border px-4 py-3.5">
         <div className="max-w-lg mx-auto flex items-center gap-3">
-          {step > 1 ? (
+          {step > (isExistingUser ? 2 : 1) ? (
             <button onClick={() => setStep(step - 1)} className="text-muted-foreground hover:text-foreground p-1" aria-label="Voltar">
               <ArrowLeft size={24} />
             </button>
           ) : (
-            <Link to="/cadastro" className="text-muted-foreground hover:text-foreground p-1" aria-label="Voltar">
+            <Link to={isExistingUser ? "/buscar" : "/cadastro"} className="text-muted-foreground hover:text-foreground p-1" aria-label="Voltar">
               <ArrowLeft size={24} />
             </Link>
           )}
-          <div className="flex-1"><ProgressSteps current={step} total={4} /></div>
+          <div className="flex-1"><ProgressSteps current={displayStep} total={totalSteps} /></div>
         </div>
       </header>
 
