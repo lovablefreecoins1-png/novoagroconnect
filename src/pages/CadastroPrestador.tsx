@@ -1,18 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, MapPin, Upload, Camera } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ProgressSteps from "@/components/ProgressSteps";
 import { formatPhone, validatePhone, formatCEP, fetchCEP, formatCPF, validateCPF } from "@/lib/validators";
 import { serviceCategories, providerRadiusOptions } from "@/data/categories";
-import { signUp } from "@/lib/auth";
+import { signUp, useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function CadastroPrestador() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, loading: authLoading } = useAuth();
+  const isExistingUser = !!user;
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+
+  // If user is already logged in, skip step 1 (personal data) and start at step 2
+  useEffect(() => {
+    if (user && step === 1) {
+      setStep(2);
+    }
+  }, [user]);
 
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
@@ -98,9 +107,12 @@ export default function CadastroPrestador() {
     reader.readAsDataURL(file);
   };
 
+  const totalSteps = isExistingUser ? 3 : 4;
+  const displayStep = isExistingUser ? step - 1 : step;
+
   const validate = () => {
     const e: Record<string, string> = {};
-    if (step === 1) {
+    if (step === 1 && !isExistingUser) {
       if (!nome.trim()) e.nome = "Este campo precisa ser preenchido.";
       if (!validateCPF(cpf)) e.cpf = "CPF inválido. Verifique os números digitados.";
       if (!validatePhone(celular)) e.celular = "Número de celular incompleto. Use o formato (XX) XXXXX-XXXX.";
@@ -110,7 +122,7 @@ export default function CadastroPrestador() {
     }
     if (step === 2) { if (!categoria) e.categoria = "Selecione sua categoria."; }
     if (step === 3) { if (!fotoPerfil) e.fotoPerfil = "Foto de perfil é obrigatória."; }
-    if (step === 4) {
+    if (step === 4 && !isExistingUser) {
       if (!termos) e.termos = "Aceite as regras do app para continuar.";
     }
     setErrors(e);
@@ -119,33 +131,48 @@ export default function CadastroPrestador() {
 
   const handleNext = async () => {
     if (!validate()) return;
-    if (step < 4) { setStep(step + 1); setErrors({}); return; }
+    const lastStep = isExistingUser ? 3 : 4;
+    if (step < lastStep) { setStep(step + 1); setErrors({}); return; }
 
     setLoading(true);
     try {
-      await signUp(email, senha, {
-        full_name: nome,
-        phone: celular,
-        user_type: "prestador",
-        city: cidade,
-        state: estado,
-      });
-
-      // Create provider record
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        await supabase.from("profiles").update({ lat, lng }).eq("id", session.user.id);
-        await supabase.from("providers").insert({
-          user_id: session.user.id,
+      if (isExistingUser) {
+        // Already logged in — just create provider record
+        await supabase.from("profiles").update({ user_type: "ambos" }).eq("id", user.id);
+        await supabase.from("providers").upsert({
+          user_id: user.id,
           category: categoria,
           radius_km: raio,
           available: disponibilidade,
           bio,
+        }, { onConflict: "user_id" });
+        toast({ title: "Perfil de prestador criado! 🎉" });
+        navigate("/inicio");
+      } else {
+        await signUp(email, senha, {
+          full_name: nome,
+          phone: celular,
+          user_type: "prestador",
+          city: cidade,
+          state: estado,
         });
-      }
 
-      toast({ title: "Conta criada! Bem-vindo ao AgroConnect." });
-      navigate("/prestador");
+        // Create provider record
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          await supabase.from("profiles").update({ lat, lng }).eq("id", session.user.id);
+          await supabase.from("providers").insert({
+            user_id: session.user.id,
+            category: categoria,
+            radius_km: raio,
+            available: disponibilidade,
+            bio,
+          });
+        }
+
+        toast({ title: "Conta criada! Bem-vindo ao AgroConnect." });
+        navigate("/inicio");
+      }
     } catch (err: any) {
       if (err.message?.includes("already registered")) {
         setErrors({ email: "Este email já está cadastrado. Tente fazer login." });
@@ -168,16 +195,16 @@ export default function CadastroPrestador() {
     <div className="min-h-screen flex flex-col bg-background">
       <header className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm border-b border-border px-4 py-3.5">
         <div className="max-w-lg mx-auto flex items-center gap-3">
-          {step > 1 ? (
+          {step > (isExistingUser ? 2 : 1) ? (
             <button onClick={() => setStep(step - 1)} className="text-muted-foreground hover:text-foreground p-1" aria-label="Voltar">
               <ArrowLeft size={24} />
             </button>
           ) : (
-            <Link to="/cadastro" className="text-muted-foreground hover:text-foreground p-1" aria-label="Voltar">
+            <Link to={isExistingUser ? "/buscar" : "/cadastro"} className="text-muted-foreground hover:text-foreground p-1" aria-label="Voltar">
               <ArrowLeft size={24} />
             </Link>
           )}
-          <div className="flex-1"><ProgressSteps current={step} total={4} /></div>
+          <div className="flex-1"><ProgressSteps current={displayStep} total={totalSteps} /></div>
         </div>
       </header>
 
@@ -362,9 +389,9 @@ export default function CadastroPrestador() {
 
         <div className="mt-8 space-y-3">
           <button onClick={handleNext} disabled={loading} className="btn-primary w-full disabled:opacity-50">
-            {loading ? "Criando conta..." : step === 4 ? "Criar minha conta" : "Continuar"}
+            {loading ? "Salvando..." : step === (isExistingUser ? 3 : 4) ? (isExistingUser ? "Ativar perfil de prestador" : "Criar minha conta") : "Continuar"}
           </button>
-          {step > 1 && (
+          {step > (isExistingUser ? 2 : 1) && (
             <button onClick={() => setStep(step - 1)} className="w-full text-center text-[15px] text-muted-foreground py-2">
               Voltar
             </button>
