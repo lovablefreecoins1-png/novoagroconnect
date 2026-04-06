@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import ProgressSteps from "@/components/ProgressSteps";
 import { formatPhone, validatePhone, formatCEP, fetchCEP, formatCPF, validateCPF } from "@/lib/validators";
 import { serviceCategories, providerRadiusOptions } from "@/data/categories";
-import { signUp } from "@/lib/auth";
+import { signUp, useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function CadastroPrestador() {
