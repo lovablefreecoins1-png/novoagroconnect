@@ -11,8 +11,17 @@ import { supabase } from "@/integrations/supabase/client";
 export default function CadastroPrestador() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, loading: authLoading } = useAuth();
+  const isExistingUser = !!user;
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+
+  // If user is already logged in, skip step 1 (personal data) and start at step 2
+  useEffect(() => {
+    if (user && step === 1) {
+      setStep(2);
+    }
+  }, [user]);
 
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
