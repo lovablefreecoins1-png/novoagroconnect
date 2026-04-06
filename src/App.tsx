@@ -64,8 +64,8 @@ const App = () => (
               <Route path="/login" element={<AuthRedirect><Login /></AuthRedirect>} />
               <Route path="/cadastro" element={<AuthRedirect><Cadastro /></AuthRedirect>} />
               <Route path="/cadastro/produtor" element={<AuthRedirect><CadastroProdutor /></AuthRedirect>} />
-              <Route path="/cadastro/prestador" element={<AuthRedirect><CadastroPrestador /></AuthRedirect>} />
-              <Route path="/cadastro/ambos" element={<AuthRedirect><CadastroAmbos /></AuthRedirect>} />
+              <Route path="/cadastro/prestador" element={<CadastroPrestador />} />
+              <Route path="/cadastro/ambos" element={<CadastroAmbos />} />
 
               {/* Unified Panel - 5 main tabs */}
               <Route path="/inicio" element={<Inicio />} />
