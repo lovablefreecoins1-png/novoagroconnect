@@ -107,9 +107,12 @@ export default function CadastroPrestador() {
     reader.readAsDataURL(file);
   };
 
+  const totalSteps = isExistingUser ? 3 : 4;
+  const displayStep = isExistingUser ? step - 1 : step;
+
   const validate = () => {
     const e: Record<string, string> = {};
-    if (step === 1) {
+    if (step === 1 && !isExistingUser) {
       if (!nome.trim()) e.nome = "Este campo precisa ser preenchido.";
       if (!validateCPF(cpf)) e.cpf = "CPF inválido. Verifique os números digitados.";
       if (!validatePhone(celular)) e.celular = "Número de celular incompleto. Use o formato (XX) XXXXX-XXXX.";
@@ -119,7 +122,7 @@ export default function CadastroPrestador() {
     }
     if (step === 2) { if (!categoria) e.categoria = "Selecione sua categoria."; }
     if (step === 3) { if (!fotoPerfil) e.fotoPerfil = "Foto de perfil é obrigatória."; }
-    if (step === 4) {
+    if (step === 4 && !isExistingUser) {
       if (!termos) e.termos = "Aceite as regras do app para continuar.";
     }
     setErrors(e);
@@ -128,17 +131,31 @@ export default function CadastroPrestador() {
 
   const handleNext = async () => {
     if (!validate()) return;
-    if (step < 4) { setStep(step + 1); setErrors({}); return; }
+    const lastStep = isExistingUser ? 3 : 4;
+    if (step < lastStep) { setStep(step + 1); setErrors({}); return; }
 
     setLoading(true);
     try {
-      await signUp(email, senha, {
-        full_name: nome,
-        phone: celular,
-        user_type: "prestador",
-        city: cidade,
-        state: estado,
-      });
+      if (isExistingUser) {
+        // Already logged in — just create provider record
+        await supabase.from("profiles").update({ user_type: "ambos" }).eq("id", user.id);
+        await supabase.from("providers").upsert({
+          user_id: user.id,
+          category: categoria,
+          radius_km: raio,
+          available: disponibilidade,
+          bio,
+        }, { onConflict: "user_id" });
+        toast({ title: "Perfil de prestador criado! 🎉" });
+        navigate("/inicio");
+      } else {
+        await signUp(email, senha, {
+          full_name: nome,
+          phone: celular,
+          user_type: "prestador",
+          city: cidade,
+          state: estado,
+        });
 
       // Create provider record
       const { data: { session } } = await supabase.auth.getSession();
