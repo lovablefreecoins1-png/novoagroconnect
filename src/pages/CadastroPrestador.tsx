@@ -121,7 +121,7 @@ export default function CadastroPrestador() {
       if (!cidade || !estado) e.cep = "Informe seu CEP ou use a localização.";
     }
     if (step === 2) { if (!categoria) e.categoria = "Selecione sua categoria."; }
-    if (step === 3) { if (!fotoPerfil) e.fotoPerfil = "Foto de perfil é obrigatória."; }
+    if (step === 3 && !isExistingUser) { if (!fotoPerfil) e.fotoPerfil = "Foto de perfil é obrigatória."; }
     if (step === 4 && !isExistingUser) {
       if (!termos) e.termos = "Aceite as regras do app para continuar.";
     }
