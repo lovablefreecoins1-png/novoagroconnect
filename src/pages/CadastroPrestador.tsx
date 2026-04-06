@@ -157,21 +157,22 @@ export default function CadastroPrestador() {
           state: estado,
         });
 
-      // Create provider record
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        await supabase.from("profiles").update({ lat, lng }).eq("id", session.user.id);
-        await supabase.from("providers").insert({
-          user_id: session.user.id,
-          category: categoria,
-          radius_km: raio,
-          available: disponibilidade,
-          bio,
-        });
-      }
+        // Create provider record
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          await supabase.from("profiles").update({ lat, lng }).eq("id", session.user.id);
+          await supabase.from("providers").insert({
+            user_id: session.user.id,
+            category: categoria,
+            radius_km: raio,
+            available: disponibilidade,
+            bio,
+          });
+        }
 
-      toast({ title: "Conta criada! Bem-vindo ao AgroConnect." });
-      navigate("/prestador");
+        toast({ title: "Conta criada! Bem-vindo ao AgroConnect." });
+        navigate("/inicio");
+      }
     } catch (err: any) {
       if (err.message?.includes("already registered")) {
         setErrors({ email: "Este email já está cadastrado. Tente fazer login." });
