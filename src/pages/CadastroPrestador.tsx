@@ -389,9 +389,9 @@ export default function CadastroPrestador() {
 
         <div className="mt-8 space-y-3">
           <button onClick={handleNext} disabled={loading} className="btn-primary w-full disabled:opacity-50">
-            {loading ? "Criando conta..." : step === 4 ? "Criar minha conta" : "Continuar"}
+            {loading ? "Salvando..." : step === (isExistingUser ? 3 : 4) ? (isExistingUser ? "Ativar perfil de prestador" : "Criar minha conta") : "Continuar"}
           </button>
-          {step > 1 && (
+          {step > (isExistingUser ? 2 : 1) && (
             <button onClick={() => setStep(step - 1)} className="w-full text-center text-[15px] text-muted-foreground py-2">
               Voltar
             </button>
