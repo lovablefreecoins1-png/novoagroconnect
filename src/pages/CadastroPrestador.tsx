@@ -4,7 +4,7 @@ import { ArrowLeft, MapPin, Upload, Camera } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ProgressSteps from "@/components/ProgressSteps";
 import { formatPhone, validatePhone, formatCEP, fetchCEP, formatCPF, validateCPF } from "@/lib/validators";
-import { serviceCategories, providerRadiusOptions } from "@/data/categories";
+import { serviceCategories } from "@/data/categories";
 import { signUp, useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -15,13 +15,14 @@ export default function CadastroPrestador() {
   const isExistingUser = !!user;
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [initialDataLoading, setInitialDataLoading] = useState(false);
+  const [hasExistingProvider, setHasExistingProvider] = useState(false);
 
-  // If user is already logged in, skip step 1 (personal data) and start at step 2
   useEffect(() => {
     if (user && step === 1) {
       setStep(2);
     }
-  }, [user]);
+  }, [user, step]);
 
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
@@ -49,6 +50,55 @@ export default function CadastroPrestador() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  useEffect(() => {
+    if (!user) return;
+
+    let isActive = true;
+
+    const loadExistingData = async () => {
+      setInitialDataLoading(true);
+
+      const [{ data: profile }, { data: provider }] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("full_name, phone, city, state, lat, lng, avatar_url")
+          .eq("id", user.id)
+          .maybeSingle(),
+        supabase
+          .from("providers")
+          .select("category, radius_km, available, bio")
+          .eq("user_id", user.id)
+          .maybeSingle(),
+      ]);
+
+      if (!isActive) return;
+
+      setNome(profile?.full_name || user.name || "");
+      setCelular(profile?.phone || user.phone || "");
+      setCidade(profile?.city || user.city || "");
+      setEstado(profile?.state || user.state || "MG");
+      setLat(profile?.lat ?? user.lat ?? null);
+      setLng(profile?.lng ?? user.lng ?? null);
+      setFotoPerfil(profile?.avatar_url || null);
+
+      if (provider) {
+        setHasExistingProvider(true);
+        setCategoria(provider.category || "");
+        setRaio(provider.radius_km ?? 80);
+        setDisponibilidade(((provider.available as "now" | "week" | "busy" | null) ?? "now"));
+        setBio(provider.bio || "");
+      }
+
+      setInitialDataLoading(false);
+    };
+
+    loadExistingData();
+
+    return () => {
+      isActive = false;
+    };
+  }, [user]);
+
   const handleCep = async (value: string) => {
     const formatted = formatCEP(value);
     setCep(formatted);
@@ -56,17 +106,23 @@ export default function CadastroPrestador() {
       setLoadingCep(true);
       const result = await fetchCEP(value);
       setLoadingCep(false);
-      if (result) { setCidade(result.cidade); setEstado(result.estado); }
-      else setErrors(prev => ({ ...prev, cep: "CEP não encontrado. Digite o nome da sua cidade." }));
+      if (result) {
+        setCidade(result.cidade);
+        setEstado(result.estado);
+      } else {
+        setErrors(prev => ({ ...prev, cep: "CEP não encontrado. Digite o nome da sua cidade." }));
+      }
     }
   };
 
   const handleGPS = () => {
     if (!navigator.geolocation) {
-      setCidade("Boa Esperança"); setEstado("MG");
+      setCidade("Boa Esperança");
+      setEstado("MG");
       toast({ title: "Localização padrão definida", description: "Boa Esperança, MG" });
       return;
     }
+
     setLoadingGPS(true);
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
@@ -83,13 +139,16 @@ export default function CadastroPrestador() {
           setEstado(state.length > 2 ? "MG" : state);
           toast({ title: "Localização detectada", description: `${city}, ${state}` });
         } catch {
-          setCidade("Boa Esperança"); setEstado("MG");
+          setCidade("Boa Esperança");
+          setEstado("MG");
         }
         setLoadingGPS(false);
       },
       () => {
-        setCidade("Boa Esperança"); setEstado("MG");
-        setLat(-21.0922); setLng(-45.5631);
+        setCidade("Boa Esperança");
+        setEstado("MG");
+        setLat(-21.0922);
+        setLng(-45.5631);
         toast({ title: "Localização padrão definida", description: "Boa Esperança, MG" });
         setLoadingGPS(false);
       },
@@ -107,6 +166,26 @@ export default function CadastroPrestador() {
     reader.readAsDataURL(file);
   };
 
+  const uploadProfileImage = async (userId: string, image: string | null) => {
+    if (!image) return null;
+    if (!image.startsWith("data:")) return image;
+
+    const response = await fetch(image);
+    const blob = await response.blob();
+    const extension = blob.type.split("/")[1] || "jpg";
+    const filePath = `${userId}/avatar.${extension}`;
+
+    const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, blob, {
+      upsert: true,
+      contentType: blob.type,
+    });
+
+    if (uploadError) throw uploadError;
+
+    const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
+    return `${data.publicUrl}?t=${Date.now()}`;
+  };
+
   const totalSteps = isExistingUser ? 3 : 4;
   const displayStep = isExistingUser ? step - 1 : step;
 
@@ -120,36 +199,55 @@ export default function CadastroPrestador() {
       if (senha.length < 6) e.senha = "Senha deve ter no mínimo 6 caracteres.";
       if (!cidade || !estado) e.cep = "Informe seu CEP ou use a localização.";
     }
-    if (step === 2) { if (!categoria) e.categoria = "Selecione sua categoria."; }
-    if (step === 3 && !isExistingUser) { if (!fotoPerfil) e.fotoPerfil = "Foto de perfil é obrigatória."; }
-    if (step === 4 && !isExistingUser) {
-      if (!termos) e.termos = "Aceite as regras do app para continuar.";
-    }
+    if (step === 2 && !categoria) e.categoria = "Selecione sua categoria.";
+    if (step === 3 && !isExistingUser && !fotoPerfil) e.fotoPerfil = "Foto de perfil é obrigatória.";
+    if (step === 4 && !isExistingUser && !termos) e.termos = "Aceite as regras do app para continuar.";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
   const handleNext = async () => {
     if (!validate()) return;
+
     const lastStep = isExistingUser ? 3 : 4;
-    if (step < lastStep) { setStep(step + 1); setErrors({}); return; }
+    if (step < lastStep) {
+      setStep(step + 1);
+      setErrors({});
+      return;
+    }
 
     setLoading(true);
     try {
-      if (isExistingUser) {
-        // Already logged in — just create provider record
-        await supabase.from("profiles").update({ user_type: "ambos" }).eq("id", user.id);
-        await supabase.from("providers").upsert({
-          user_id: user.id,
-          category: categoria,
-          radius_km: raio,
-          available: disponibilidade,
-          bio,
-        }, { onConflict: "user_id" });
-        toast({ title: "Perfil de prestador criado! 🎉" });
-        navigate("/inicio");
+      if (isExistingUser && user) {
+        const avatarUrl = await uploadProfileImage(user.id, fotoPerfil);
+
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .update({
+            user_type: "ambos",
+            ...(avatarUrl ? { avatar_url: avatarUrl } : {}),
+          })
+          .eq("id", user.id);
+
+        if (profileError) throw profileError;
+
+        const { error: providerError } = await supabase.from("providers").upsert(
+          {
+            user_id: user.id,
+            category: categoria,
+            radius_km: raio,
+            available: disponibilidade,
+            bio,
+          },
+          { onConflict: "user_id" }
+        );
+
+        if (providerError) throw providerError;
+
+        toast({ title: hasExistingProvider ? "Anúncio atualizado! 🎉" : "Perfil de prestador criado! 🎉" });
+        navigate("/buscar", { replace: true });
       } else {
-        await signUp(email, senha, {
+        const signUpData = await signUp(email, senha, {
           full_name: nome,
           phone: celular,
           user_type: "prestador",
@@ -157,33 +255,61 @@ export default function CadastroPrestador() {
           state: estado,
         });
 
-        // Create provider record
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          await supabase.from("profiles").update({ lat, lng }).eq("id", session.user.id);
-          await supabase.from("providers").insert({
-            user_id: session.user.id,
-            category: categoria,
-            radius_km: raio,
-            available: disponibilidade,
-            bio,
+        const sessionUser = signUpData.session?.user;
+        if (!sessionUser) {
+          toast({
+            title: "Conta criada! Confirme seu email para continuar.",
+            description: "Depois de entrar, volte em Buscar > Anunciar serviço.",
           });
+          navigate("/login", { replace: true });
+          return;
         }
 
+        const avatarUrl = await uploadProfileImage(sessionUser.id, fotoPerfil);
+
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .update({
+            lat,
+            lng,
+            ...(avatarUrl ? { avatar_url: avatarUrl } : {}),
+          })
+          .eq("id", sessionUser.id);
+
+        if (profileError) throw profileError;
+
+        const { error: providerError } = await supabase.from("providers").insert({
+          user_id: sessionUser.id,
+          category: categoria,
+          radius_km: raio,
+          available: disponibilidade,
+          bio,
+        });
+
+        if (providerError) throw providerError;
+
         toast({ title: "Conta criada! Bem-vindo ao AgroConnect." });
-        navigate("/inicio");
+        navigate("/buscar", { replace: true });
       }
     } catch (err: any) {
       if (err.message?.includes("already registered")) {
         setErrors({ email: "Este email já está cadastrado. Tente fazer login." });
         setStep(1);
       } else {
-        toast({ title: "Erro ao criar conta. Tente novamente.", variant: "destructive" });
+        toast({ title: "Erro ao salvar anúncio de prestador. Tente novamente.", variant: "destructive" });
       }
     } finally {
       setLoading(false);
     }
   };
+
+  if (authLoading || initialDataLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-muted-foreground animate-pulse">Carregando...</p>
+      </div>
+    );
+  }
 
   const dispOptions = [
     { value: "now" as const, label: "Disponível agora", dot: "bg-[hsl(var(--success))]" },

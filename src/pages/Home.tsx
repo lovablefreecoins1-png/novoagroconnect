@@ -136,6 +136,12 @@ export default function Home() {
   const dispLabel = (a: string | null) => a === "now" ? "Disponível" : a === "week" ? "Esta semana" : "Ocupado";
   const dispBg = (a: string | null) => a === "now" ? "bg-green-100 text-green-700" : a === "week" ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700";
   const dispDot = (a: string | null) => a === "now" ? "bg-green-500" : a === "week" ? "bg-amber-500" : "bg-red-500";
+  const isProviderUser = user?.role === "prestador" || user?.role === "ambos";
+  const providerEntryHref = "/cadastro/prestador";
+  const providerCtaTitle = isProviderUser ? "Editar meu anúncio de serviço" : "Sou prestador — Anunciar serviço agora";
+  const providerCtaSubtitle = isProviderUser
+    ? "Atualize categoria, disponibilidade e perfil do anúncio"
+    : "Cadastre-se e apareça para produtores da região";
 
   return (
     <div className="min-h-screen pb-20 md:pb-6 bg-background">
@@ -161,29 +167,16 @@ export default function Home() {
 
       {/* Offer Service CTA */}
       <div className="max-w-2xl mx-auto px-4 mt-3">
-        {user && (user.role === "prestador" || user.role === "ambos") ? (
-          <Link to="/meus-servicos"
-            className="flex items-center gap-3 p-4 rounded-2xl bg-primary/10 border border-primary/20 hover:bg-primary/15 transition-colors active:scale-[0.99]">
-            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-              <Wrench size={20} className="text-primary-foreground" />
-            </div>
-            <div className="flex-1">
-              <p className="font-medium text-sm text-foreground">Gerenciar meus serviços</p>
-              <p className="text-xs text-muted-foreground">Veja seus contratos e serviços ativos</p>
-            </div>
-          </Link>
-        ) : (
-          <Link to="/cadastro/prestador"
-            className="flex items-center gap-3 p-4 rounded-2xl bg-primary/10 border border-primary/20 hover:bg-primary/15 transition-colors active:scale-[0.99]">
-            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-              <Wrench size={20} className="text-primary-foreground" />
-            </div>
-            <div className="flex-1">
-              <p className="font-medium text-sm text-foreground">Sou prestador — Anunciar serviço agora</p>
-              <p className="text-xs text-muted-foreground">Cadastre-se e apareça para produtores da região</p>
-            </div>
-          </Link>
-        )}
+        <Link to={providerEntryHref}
+          className="flex items-center gap-3 p-4 rounded-2xl bg-primary/10 border border-primary/20 hover:bg-primary/15 transition-colors active:scale-[0.99]">
+          <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+            <Wrench size={20} className="text-primary-foreground" />
+          </div>
+          <div className="flex-1">
+            <p className="font-medium text-sm text-foreground">{providerCtaTitle}</p>
+            <p className="text-xs text-muted-foreground">{providerCtaSubtitle}</p>
+          </div>
+        </Link>
       </div>
 
       {/* Advanced Filters */}
@@ -310,10 +303,10 @@ export default function Home() {
 
       {/* FAB - Anunciar Serviço */}
       <Link
-        to={user && (user.role === "prestador" || user.role === "ambos") ? "/meus-servicos" : "/cadastro/prestador"}
+        to={providerEntryHref}
         className="fixed bottom-24 right-5 z-30 flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all active:scale-[0.96] md:bottom-8"
       >
-        <Plus size={20} /> Anunciar Serviço
+        <Plus size={20} /> {isProviderUser ? "Editar Serviço" : "Anunciar Serviço"}
       </Link>
     </div>
   );
